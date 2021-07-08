@@ -1,0 +1,24 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+name: eventstream
+services:
+  - name: mongo
+    image: mongo:latest
+    bindings:
+      - connectionString: mongodb://${host}:${port}/
+        port: 27017
+        protocol: mongodb
+    volumes:
+      - name: mongodb-storage
+        source: /data/db
+        target: /data/db
+  - name: eventstream
+    project: EventStream.Server/EventStream.Server.csproj
+  - name: eventstream-client
+    project: EventStream.Client/EventStream.Client.csproj
+  - name: eventstream-console
+    project: EventStream.Console/EventStream.Console.csproj
