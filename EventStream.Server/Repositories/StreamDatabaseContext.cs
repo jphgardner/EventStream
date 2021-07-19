@@ -6,19 +6,19 @@ using EventStream.Domain.Models;
 using EventStream.Server.Options;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace EventStream.Server.Repositories
 {
-    public class StreamDatabase
+    public class StreamDatabaseContext
     {
         private readonly IMongoClient _mongoClient;
         private readonly IMongoDatabase _database;
         public readonly IMongoCollection<Client> Clients;
         public readonly IMongoCollection<User> Users;
+        public readonly IMongoCollection<Metric> Metrics;
         public readonly List<StreamCollection> Streams = new();
 
-        public StreamDatabase(IOptions<MongoOptions> dbOptions)
+        public StreamDatabaseContext(IOptions<MongoOptions> dbOptions)
         {
             _mongoClient = new MongoClient(dbOptions.Value.ConnectionString);
             _database = _mongoClient.GetDatabase(dbOptions.Value.Database);

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using EventStream.Domain;
 using MongoDB.Driver;
 
@@ -15,9 +16,9 @@ namespace EventStream.Server.Repositories
             Collection = collection;
         }
 
-        public void AddEvent(Event @event)
+        public async Task AddEvent(Event @event)
         {
-            Collection.InsertOne(@event);
+            await Collection.InsertOneAsync(@event);
         }
     }
 }

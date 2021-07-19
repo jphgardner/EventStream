@@ -30,7 +30,7 @@ namespace EventStream.Server
             services.Configure<MongoOptions>(Configuration.GetSection("Mongo"));
             services.Configure<StreamServerOptions>(Configuration.GetSection("StreamServer")); ;
 
-            services.AddSingleton<StreamDatabase>();
+            services.AddSingleton<StreamDatabaseContext>();
             
             services.AddSingleton<Protocol>();
             services.AddHostedService<StreamServerHost>();

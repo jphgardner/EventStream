@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EventStream.Domain.Interfaces;
 using EventStream.Domain.Options;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,12 @@ namespace EventStream.Domain
             return services;
         }
 
+        public static void EventStreamConnect(this IApplicationBuilder app)
+        {
+            var streamClient = app.ApplicationServices.GetService<IEventStreamClient>();
+            streamClient.Connect();
+        }
+
         struct Unit
         {
         }
@@ -26,9 +33,7 @@ namespace EventStream.Domain
         public static Task AsTask(this CancellationToken @this)
         {
             var tcs = new TaskCompletionSource<Unit>();
-
             @this.Register(() => tcs.SetResult(default));
-
             return tcs.Task;
         }
 

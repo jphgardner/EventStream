@@ -12,11 +12,11 @@ namespace EventStream.Server.Socket
 {
     public class Protocol
     {
-        private readonly StreamDatabase _streamDatabase;
+        private readonly StreamDatabaseContext _streamDatabase;
         private readonly Dictionary<Guid, EventStreamConnection> _clients = new();
         private readonly Dictionary<Guid, Task> _clientLoops = new();
 
-        public Protocol(StreamDatabase streamDatabase)
+        public Protocol(StreamDatabaseContext streamDatabase)
         {
             _streamDatabase = streamDatabase;
         }
@@ -29,6 +29,14 @@ namespace EventStream.Server.Socket
             _clientLoops.Add(connection.ConnectionId, Task.Run(() => ClientLoop(connection)));
 
             Console.WriteLine($"{connection.ConnectionId} Connected!");
+        }
+
+        private bool Close(Guid connectionId)
+        {
+            var connection = _clients[connectionId];
+            connection.Cancellation.Cancel();
+            _clients.Remove(connectionId);
+            return _clientLoops.Remove(connectionId);
         }
 
         public void DisconnectClients()
@@ -51,9 +59,7 @@ namespace EventStream.Server.Socket
                 if (message == null)
                 {
                     Console.WriteLine($"Connection closed");
-                    _clients.Remove(connection.ConnectionId);
-                    _clientLoops.Remove(connection.ConnectionId);
-                    connection.Cancellation.Cancel();
+                    Close(connection.ConnectionId);
                 }
 
                 switch ((FrameId) message[0])
@@ -72,9 +78,7 @@ namespace EventStream.Server.Socket
             }, (exception) =>
             {
                 connection.Stream.Close();
-                _clients.Remove(connection.ConnectionId);
-                _clientLoops.Remove(connection.ConnectionId);
-                connection.Cancellation.Cancel();
+                Close(connection.ConnectionId);
                 Console.WriteLine($"{connection.ConnectionId} Disconnected");
             });
         }

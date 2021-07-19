@@ -20,10 +20,10 @@ namespace EventStream.Domain
         public EventStreamClient(IOptions<EventStreamOptions> options)
         {
             _options = options.Value;
-            Connect();
+            Console.WriteLine("EventStreamClient");
         }
 
-        private async void Connect()
+        public async void Connect()
         {
             try
             {
@@ -36,7 +36,7 @@ namespace EventStream.Domain
                 _connection = new EventStreamConnection(_stream);
                 await Authenticate();
 
-                await Task.Run(ReadLoop);
+                Task.Run(ReadLoop);
             }
             catch
             {
